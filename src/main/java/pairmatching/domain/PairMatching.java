@@ -24,6 +24,7 @@ public class PairMatching {
 
     public void match() {
         Crews crews = loadCrews();
+        String levelKey = MatchHistoryManager.makeLevelKey(developType, level);
 
         boolean isPossible;
         int tryCount = 0;
@@ -32,7 +33,7 @@ public class PairMatching {
                 throw PairmatchingException.from(ErrorMessage.PAIR_MATCHING_FAILURE);
             }
             crews.shuffle();
-            isPossible = isPossiblePair(crews);
+            isPossible = isPossiblePair(crews, levelKey);
             tryCount++;
         } while(!isPossible);
 
@@ -43,21 +44,22 @@ public class PairMatching {
             Crew leftCrew = crewList.get(i);
             Crew rightCrew = crewList.get(i+1);
             addMatchHistory(leftCrew, rightCrew);
+            MatchHistoryManager.addHistory(levelKey, leftCrew, rightCrew);
         }
 
         tripleMatch(crewCount, crewList);
     }
 
-    private boolean isPossiblePair(Crews crews) {
+    private boolean isPossiblePair(Crews crews, String levelKey) {
         List<Crew> crewList = crews.getCrews();
         int crewCount = crewList.size();
 
         for (int i = 0; i < crewCount - 1; i += 2) {
             Crew leftCrew = crewList.get(i);
             Crew rightCrew = crewList.get(i+1);
-            if (!canMatch(leftCrew, rightCrew)) return false;
+            if (!MatchHistoryManager.canMatch(levelKey, leftCrew, rightCrew)) return false;
         }
-        if (!tripleCanMatch(crewCount, crewList)) return false;
+        if (!tripleCanMatch(crewCount, crewList, levelKey)) return false;
 
         return true;
     }
@@ -94,28 +96,20 @@ public class PairMatching {
         }
     }
 
-    private boolean tripleCanMatch(int crewCount, List<Crew> crews) {
+    private boolean tripleCanMatch(int crewCount, List<Crew> crews, String levelKey) {
         if (crewCount % 2 != 0) {
             Crew firstCrew = crews.get(crewCount - 3);
             Crew secondCrew = crews.get(crewCount - 2);
             Crew thirdCrew = crews.get(crewCount - 1);
-            if (!canMatch(firstCrew, thirdCrew) || !canMatch(secondCrew, thirdCrew)) return false;
+            if (!MatchHistoryManager.canMatch(levelKey, firstCrew, thirdCrew) ||
+                    !MatchHistoryManager.canMatch(levelKey, secondCrew, thirdCrew)) return false;
         }
         return true;
     }
 
-    private boolean canMatch(Crew firstCrew, Crew secondCrew) {
-        List<Crew> crews = matchHistory.getOrDefault(firstCrew, new ArrayList<>());
-        if (crews.contains(secondCrew)) return false;
-        return true;
-    }
-
     private void addMatchHistory(Crew firstCrew, Crew secondCrew) {
-        matchHistory.putIfAbsent(firstCrew, new ArrayList<>());
-        matchHistory.get(firstCrew).add(secondCrew);
-
-        matchHistory.putIfAbsent(secondCrew, new ArrayList<>());
-        matchHistory.get(secondCrew).add(firstCrew);
+        matchHistory.computeIfAbsent(firstCrew, k -> new ArrayList<>()).add(secondCrew);
+        matchHistory.computeIfAbsent(secondCrew, k -> new ArrayList<>()).add(firstCrew);
     }
 
     private void validateEmpty(List<String> input) {

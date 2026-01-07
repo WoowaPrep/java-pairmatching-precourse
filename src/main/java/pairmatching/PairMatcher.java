@@ -3,6 +3,7 @@ package pairmatching;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import pairmatching.domain.MatchHistoryManager;
 import pairmatching.domain.Menu;
 import pairmatching.domain.PairMatching;
 import pairmatching.domain.PairRematchStatus;
@@ -72,6 +73,12 @@ public class PairMatcher {
                 PairRematchStatus rematchMarker = PairRematchStatus.from(rematchInput);
 
                 if (rematchMarker == PairRematchStatus.NO) continue;
+
+                String levelKey = MatchHistoryManager.makeLevelKey(
+                        pairMatching.getDevelopType(),
+                        pairMatching.getLevel()
+                );
+                MatchHistoryManager.clearLevel(levelKey);
             }
 
             pairMatching.match();
@@ -98,6 +105,7 @@ public class PairMatcher {
 
     private boolean handlePairClear() {
         matchingHistory.clear();
+        MatchHistoryManager.clearAll();
         outputView.printPairmatchClear();
         return true;
     }
