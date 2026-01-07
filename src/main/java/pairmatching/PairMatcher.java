@@ -3,7 +3,6 @@ package pairmatching;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-import pairmatching.domain.Crews;
 import pairmatching.domain.Menu;
 import pairmatching.domain.PairMatching;
 import pairmatching.domain.PairRematchStatus;
@@ -36,23 +35,13 @@ public class PairMatcher {
         do {
             isContinue = play();
         } while(isContinue);
-
     }
 
     private boolean play() {
         return retry(() -> {
             Menu menu = FeatureSelect();
 
-            if (menu == Menu.FIRST){
-                inputView.printPairmatchingHeader();
-
-                boolean isContinue;
-                do {
-                    isContinue = handlePairMatching();
-                } while(isContinue);
-
-                return true;
-            }
+            if (menu == Menu.FIRST) return handlePairMatching();
             if (menu == Menu.SECOND) return handlePairInquiry();
             if (menu == Menu.THIRD) return handlePairClear();
             if (menu == Menu.QUIT) return false;
@@ -69,23 +58,27 @@ public class PairMatcher {
     }
 
     private boolean handlePairMatching() {
-        String input = inputView.printPairmatchingSelect();
-        PairMatching pairMatching = inputParser.parsePairmatchInfo(input);
-        String key = makeKey(pairMatching);
+        inputView.printPairmatchingHeader();
 
-        PairMatching existing = matchingHistory.get(key);
+        while(true) {
+            String input = inputView.printPairmatchingSelect();
+            PairMatching pairMatching = inputParser.parsePairmatchInfo(input);
+            String key = makeKey(pairMatching);
 
-        if (existing != null && existing.hasMatchingRecord()) {
-            String rematchInput = inputView.printRematch();
-            PairRematchStatus rematchMarker = PairRematchStatus.from(rematchInput);
+            PairMatching existing = matchingHistory.get(key);
 
-            if (rematchMarker == PairRematchStatus.NO) return true;
+            if (existing != null && existing.hasMatchingRecord()) {
+                String rematchInput = inputView.printRematch();
+                PairRematchStatus rematchMarker = PairRematchStatus.from(rematchInput);
+
+                if (rematchMarker == PairRematchStatus.NO) continue;
+            }
+
+            pairMatching.match();
+            matchingHistory.put(key, pairMatching);
+            outputView.printPairmatchResult(pairMatching);
+            return true;
         }
-
-        pairMatching.match();
-        matchingHistory.put(key, pairMatching);
-        outputView.printPairmatchResult(pairMatching);
-        return false;
     }
 
     private boolean handlePairInquiry() {

@@ -19,6 +19,7 @@ public enum ErrorMessage {
     NOT_EXIST_PAIR_MATCH_RECORD("매칭 이력이 없습니다."),
 
     INVALID_CREW_COUNT("페어 매칭을 위해서는 최소 2명은 크루가 필요합니다."),
+    PAIR_MATCHING_FAILURE("페어 매칭이 실패 했습니다."),
     ;
 
     private static final String PREFIX = "[ERROR] ";

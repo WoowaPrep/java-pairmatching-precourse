@@ -1,16 +1,11 @@
 package pairmatching.view;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import pairmatching.domain.Crew;
-import pairmatching.domain.Crews;
 import pairmatching.domain.DevelopType;
 import pairmatching.domain.Level;
 import pairmatching.domain.Mission;
 import pairmatching.domain.PairMatching;
 import pairmatching.exception.ErrorMessage;
 import pairmatching.exception.PairmatchingException;
-import pairmatching.utils.ResourceReader;
 
 public class InputParser {
 
