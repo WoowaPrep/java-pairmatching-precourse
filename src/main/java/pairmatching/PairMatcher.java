@@ -78,6 +78,7 @@ public class PairMatcher {
                         pairMatching.getDevelopType(),
                         pairMatching.getLevel()
                 );
+                matchingHistory.remove(key);
                 MatchHistoryManager.clearLevel(levelKey);
             }
 

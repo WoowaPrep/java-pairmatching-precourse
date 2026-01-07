@@ -47,7 +47,7 @@ public class PairMatching {
             MatchHistoryManager.addHistory(levelKey, leftCrew, rightCrew);
         }
 
-        tripleMatch(crewCount, crewList);
+        tripleMatch(crewCount, crewList, levelKey);
     }
 
     private boolean isPossiblePair(Crews crews, String levelKey) {
@@ -86,13 +86,15 @@ public class PairMatching {
         return !matchHistory.isEmpty();
     }
 
-    private void tripleMatch(int crewCount, List<Crew> crews) {
+    private void tripleMatch(int crewCount, List<Crew> crews, String levelKey) {
         if (crewCount % 2 != 0) {
             Crew firstCrew = crews.get(crewCount - 3);
             Crew secondCrew = crews.get(crewCount - 2);
             Crew thirdCrew = crews.get(crewCount - 1);
             addMatchHistory(firstCrew, thirdCrew);
             addMatchHistory(secondCrew, thirdCrew);
+            MatchHistoryManager.addHistory(levelKey, firstCrew, thirdCrew);
+            MatchHistoryManager.addHistory(levelKey, secondCrew, thirdCrew);
         }
     }
 

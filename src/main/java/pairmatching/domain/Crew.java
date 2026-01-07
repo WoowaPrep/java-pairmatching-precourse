@@ -10,10 +10,6 @@ public class Crew {
         this.name = name;
     }
 
-    public DevelopType getDevelopType() {
-        return developType;
-    }
-
     public String getName() {
         return name;
     }

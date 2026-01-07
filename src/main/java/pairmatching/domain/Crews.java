@@ -46,8 +46,4 @@ public class Crews {
     public List<Crew> getCrews() {
         return crews;
     }
-
-    public int count() {
-        return crews.size();
-    }
 }

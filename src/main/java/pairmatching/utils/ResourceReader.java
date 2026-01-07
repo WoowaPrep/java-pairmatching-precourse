@@ -40,10 +40,6 @@ public class ResourceReader {
         }
     }
 
-    private static boolean isEmptyLine(String line) {
-        return line.trim().isEmpty();
-    }
-
     private static InputStream getResourceAsStream(String fileName) {
         InputStream inputStream = ResourceReader.class
                 .getClassLoader()

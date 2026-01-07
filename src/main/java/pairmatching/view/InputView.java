@@ -1,6 +1,8 @@
 package pairmatching.view;
 
 import camp.nextstep.edu.missionutils.Console;
+import pairmatching.exception.ErrorMessage;
+import pairmatching.exception.PairmatchingException;
 
 public class InputView {
 
@@ -54,7 +56,11 @@ public class InputView {
     }
 
     private String readLine() {
-        return Console.readLine();
+        String input = Console.readLine();
+        if (input == null || input.trim().isEmpty()) {
+            throw PairmatchingException.from(ErrorMessage.EMPTY_INPUT);
+        }
+        return input;
     }
 
     public void printNewLine() {

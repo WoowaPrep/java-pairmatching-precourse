@@ -8,7 +8,7 @@ public enum ErrorMessage {
 
     FILE_NOT_FOUND("파일을 찾을 수 없습니다."),
     FILE_READ_FAILED("파일을 읽을 수 없습니다."),
-    EMPTY_CREW_DATA("해당 타입의 개발자 데이터가 비어있습니다."),
+    EMPTY_CREW_DATA("해당 타입의 크루 데이터가 비어있습니다."),
 
     INVALID_FEATURE_MENU("존재하지 않는 메뉴 입니다."),
     INVALID_DEVELOP_TYPE("개발자 종류는 프론트엔트 또는 벡앤드여야 합니다."),
