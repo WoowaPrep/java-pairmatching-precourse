@@ -14,7 +14,7 @@ public class OutputView {
 
     private static final String PAIR_MATCHING_HEADER = "페어 매칭 결과입니다.";
     private static final String PAIR_MATCHING_RESULT = " : %s";
-    private static final String PAIR_MATCH_INITIALIZATION_MESSAGE = "초기화 되었습니다. ";
+    private static final String PAIR_MATCH_INITIALIZATION_MESSAGE = "초기화 되었습니다.";
 
     public void printPairmatchResult(PairMatching pairMatching) {
         printNewLine();

@@ -11,6 +11,8 @@ import pairmatching.utils.ResourceReader;
 
 public class PairMatching {
 
+    private static final int MAX_RETRY_COUNT = 3;
+
     private DevelopType developType;
     private Level level;
     private Mission mission;
@@ -29,7 +31,7 @@ public class PairMatching {
         boolean isPossible;
         int tryCount = 0;
         do {
-            if (tryCount == 3) {
+            if (tryCount == MAX_RETRY_COUNT) {
                 throw PairmatchingException.from(ErrorMessage.PAIR_MATCHING_FAILURE);
             }
             crews.shuffle();

@@ -38,5 +38,4 @@ public class MatchHistoryManager {
     public static void clearAll() {
         levelHistories.clear();
     }
-
 }

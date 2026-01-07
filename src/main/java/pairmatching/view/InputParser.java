@@ -28,5 +28,4 @@ public class InputParser {
             throw PairmatchingException.from(ErrorMessage.INVALID_SEPARATION_COUNT);
         }
     }
-
 }
