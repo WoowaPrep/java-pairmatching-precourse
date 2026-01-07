@@ -14,12 +14,17 @@ public class OutputView {
 
     private static final String PAIR_MATCHING_HEADER = "페어 매칭 결과입니다.";
     private static final String PAIR_MATCHING_RESULT = " : %s";
+    private static final String PAIR_MATCH_INITIALIZATION_MESSAGE = "초기화 되었습니다. ";
 
     public void printPairmatchResult(PairMatching pairMatching) {
         printNewLine();
         System.out.println(PAIR_MATCHING_HEADER);
         printPairList(pairMatching);
+    }
+
+    public void printPairmatchClear() {
         printNewLine();
+        System.out.println(PAIR_MATCH_INITIALIZATION_MESSAGE);
     }
 
     private void printPairList(PairMatching pairMatching) {
@@ -40,6 +45,7 @@ public class OutputView {
             printNewLine();
         }
     }
+
     public void printErrorMessage(String message) {
         System.out.println(message);
     }

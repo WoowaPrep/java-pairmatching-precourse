@@ -1,7 +1,6 @@
 package pairmatching.domain;
 
 import java.util.Arrays;
-import java.util.List;
 import pairmatching.exception.ErrorMessage;
 import pairmatching.exception.PairmatchingException;
 

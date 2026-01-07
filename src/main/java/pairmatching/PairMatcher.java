@@ -1,9 +1,14 @@
 package pairmatching;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 import pairmatching.domain.Crews;
 import pairmatching.domain.Menu;
 import pairmatching.domain.PairMatching;
+import pairmatching.domain.PairRematchStatus;
+import pairmatching.exception.ErrorMessage;
+import pairmatching.exception.PairmatchingException;
 import pairmatching.view.InputParser;
 import pairmatching.view.InputView;
 import pairmatching.view.OutputView;
@@ -13,6 +18,8 @@ public class PairMatcher {
     private InputView inputView;
     private OutputView outputView;
     private InputParser inputParser;
+
+    private Map<String, PairMatching> matchingHistory = new HashMap<>();
 
     public PairMatcher() {
         this(new InputView(), new OutputView(), new InputParser());
@@ -25,33 +32,87 @@ public class PairMatcher {
     }
 
     public void match() {
-        Menu menu = FeatureSelect();
-        play(menu);
+        boolean isContinue;
+        do {
+            isContinue = play();
+        } while(isContinue);
+
+    }
+
+    private boolean play() {
+        return retry(() -> {
+            Menu menu = FeatureSelect();
+
+            if (menu == Menu.FIRST){
+                inputView.printPairmatchingHeader();
+
+                boolean isContinue;
+                do {
+                    isContinue = handlePairMatching();
+                } while(isContinue);
+
+                return true;
+            }
+            if (menu == Menu.SECOND) return handlePairInquiry();
+            if (menu == Menu.THIRD) return handlePairClear();
+            if (menu == Menu.QUIT) return false;
+
+            throw PairmatchingException.from(ErrorMessage.INVALID_FEATURE_MENU);
+        });
     }
 
     private Menu FeatureSelect() {
-        String input = inputView.printFeatureSelect();
-        return Menu.from(input);
+        return retry(() -> {
+            String input = inputView.printFeatureSelect();
+            return Menu.from(input);
+        });
     }
 
-    private void play(Menu menu) {
-        if (menu == Menu.FIRST) {
-            String input = inputView.printPairmatchingHeader();
-            PairMatching pairMatching = inputParser.parsePairmatchInfo(input);
-            Crews Crews = inputParser.parseCrews(pairMatching.getDevelopType());
+    private boolean handlePairMatching() {
+        String input = inputView.printPairmatchingSelect();
+        PairMatching pairMatching = inputParser.parsePairmatchInfo(input);
+        String key = makeKey(pairMatching);
 
-            pairMatching.match(Crews);
-            outputView.printPairmatchResult(pairMatching);
-        }
-        if (menu == Menu.SECOND) {
-            String input = inputView.printPairmatchingHeader();
-        }
-        if (menu == Menu.THIRD) {
+        PairMatching existing = matchingHistory.get(key);
 
-        }
-        if (menu == Menu.QUIT) {
+        if (existing != null && existing.hasMatchingRecord()) {
+            String rematchInput = inputView.printRematch();
+            PairRematchStatus rematchMarker = PairRematchStatus.from(rematchInput);
 
+            if (rematchMarker == PairRematchStatus.NO) return true;
         }
+
+        pairMatching.match();
+        matchingHistory.put(key, pairMatching);
+        outputView.printPairmatchResult(pairMatching);
+        return false;
+    }
+
+    private boolean handlePairInquiry() {
+        inputView.printPairmatchingHeader();
+        String input = inputView.printPairmatchingSelect();
+        PairMatching pairMatching = inputParser.parsePairmatchInfo(input);
+        String key = makeKey(pairMatching);
+
+        PairMatching existing = matchingHistory.get(key);
+        if (existing == null || !existing.hasMatchingRecord()) {
+            throw PairmatchingException.from(ErrorMessage.NOT_EXIST_PAIR_MATCH_RECORD);
+        }
+
+        outputView.printPairmatchResult(existing);
+        return true;
+    }
+
+    private boolean handlePairClear() {
+        matchingHistory.clear();
+        outputView.printPairmatchClear();
+        return true;
+    }
+
+    private String makeKey(PairMatching pairMatching) {
+        return pairMatching.getDevelopType().getName() + "_"
+                + pairMatching.getLevel().getName() + "_"
+                + pairMatching.getMission().getName();
     }
 
     private <T> T retry(Supplier<T> supplier) {

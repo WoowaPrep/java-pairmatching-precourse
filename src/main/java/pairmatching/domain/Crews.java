@@ -47,7 +47,7 @@ public class Crews {
         return crews;
     }
 
-    public int getCount() {
+    public int count() {
         return crews.size();
     }
 }

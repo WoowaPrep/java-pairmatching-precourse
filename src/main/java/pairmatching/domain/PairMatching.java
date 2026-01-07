@@ -1,10 +1,13 @@
 package pairmatching.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import pairmatching.exception.ErrorMessage;
+import pairmatching.exception.PairmatchingException;
+import pairmatching.utils.ResourceReader;
 
 public class PairMatching {
 
@@ -19,24 +22,42 @@ public class PairMatching {
         this.mission = mission;
     }
 
-    public void match(Crews crews) {
-        int crewCount = crews.getCount();
+    public void match() {
+        Crews crews = loadCrews();
+
+        int crewCount = crews.count();
         crews.shuffle();
         List<Crew> crewList = crews.getCrews();
-        for (Crew crew : crewList) {
-            System.out.println(crew.getName());
-        }
-        System.out.println();
-        int count = crewList.size();
 
-
-        for (int i = 0; i < count - 1; i += 2) {
+        for (int i = 0; i < crewCount - 1; i += 2) {
             Crew leftCrew = crewList.get(i);
             Crew rightCrew = crewList.get(i+1);
             addMatchHistory(leftCrew, rightCrew);
         }
 
         tripleMatch(crewCount, crewList);
+    }
+
+    public Crews loadCrews() {
+        List<String> crewNames = readResourceLines();
+        validateEmpty(crewNames);
+
+        List<Crew> crews = crewNames.stream()
+                .map(name -> new Crew(developType, name))
+                .collect(Collectors.toList());
+
+        return new Crews(crews);
+    }
+
+    private List<String> readResourceLines() {
+        if (developType == DevelopType.BACKEND) return ResourceReader.readLines("backend-crew.md");
+        if (developType == DevelopType.FRONTEND) return ResourceReader.readLines("frontend-crew.md");
+
+        throw PairmatchingException.from(ErrorMessage.FILE_NOT_FOUND);
+    }
+
+    public boolean hasMatchingRecord() {
+        return !matchHistory.isEmpty();
     }
 
     private void tripleMatch(int crewCount, List<Crew> crews) {
@@ -55,6 +76,12 @@ public class PairMatching {
 
         matchHistory.putIfAbsent(secondCrew, new ArrayList<>());
         matchHistory.get(secondCrew).add(firstCrew);
+    }
+
+    private void validateEmpty(List<String> input) {
+        if (input == null || input.isEmpty()) {
+            throw PairmatchingException.from(ErrorMessage.EMPTY_CREW_DATA);
+        }
     }
 
     public DevelopType getDevelopType() {

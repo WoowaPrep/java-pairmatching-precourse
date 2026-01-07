@@ -28,25 +28,6 @@ public class InputParser {
         return new PairMatching(developType, level, mission);
     }
 
-    public Crews parseCrews(DevelopType developType) {
-        List<String> crewNames = null;
-        if (developType == DevelopType.BACKEND) crewNames = ResourceReader.readLines("backend-crew.md");
-        if (developType == DevelopType.FRONTEND) crewNames = ResourceReader.readLines("frontend-crew.md");
-        validateEmpty(crewNames);
-
-        List<Crew> crews = crewNames.stream()
-                .map(name -> new Crew(developType, name))
-                .collect(Collectors.toList());
-
-        return new Crews(crews);
-    }
-
-    private void validateEmpty(List<String> input) {
-        if (input == null || input.isEmpty()) {
-            throw PairmatchingException.from(ErrorMessage.EMPTY_CREW_DATA);
-        }
-    }
-
     private void validateCount(String[] input) {
         if (input.length != SEPARATION_COUNT) {
             throw PairmatchingException.from(ErrorMessage.INVALID_SEPARATION_COUNT);
